@@ -22,7 +22,10 @@ public class PizzaPower extends AdvancedRobot {
     @Override
     public void run() {
 		setColors(Color.cyan, Color.magenta, Color.cyan);
-
+		setAdjustRadarForGunTurn(true);
+		setAdjustGunForRobotTurn(true);
+		setAdjustRadarForGunTurn(true);
+		
 		addCustomEvent(new Condition("wallApproaching") {
 			@Override
 			public boolean test() {
@@ -48,23 +51,23 @@ public class PizzaPower extends AdvancedRobot {
     		enemy.update(e, getX(), getY(), getHeading());
     	}
     	
-    	moveCorners(e);
+    	double absoluteBearing =  e.getBearingRadians() + getHeadingRadians();
+    	moveCorners(e, absoluteBearing);
     	
     	if (getGunHeat() == 0) {
 			firePredictiveBullet();
     	}
     	
     	if (e.getName().equals(enemy.name)) {
-    		lockRadarAndGunOnEnemy();
+    		lockRadarAndGunOnEnemy(absoluteBearing);
     	}
     }
     
-	private void lockRadarAndGunOnEnemy() {
+	private void lockRadarAndGunOnEnemy(double absoluteBearing) {
 		if (getGunHeat() < 1) {
 			setTurnRadarLeft(getRadarTurnRemaining());
 		}
 
-		double absoluteBearing = absoluteBearing(getX(), getY(), enemy.x, enemy.y);
 		setTurnGunRightRadians(Utils.normalRelativeAngle(absoluteBearing - getGunHeadingRadians()));
 	}
 	
@@ -132,16 +135,16 @@ public class PizzaPower extends AdvancedRobot {
 		return Math.min(3.0, 400 / distance);
 	}
 	
-    public void moveCorners(ScannedRobotEvent e) {
-		double absoluteBearing = e.getBearingRadians() + getHeadingRadians();
+    public void moveCorners(ScannedRobotEvent e, double absoluteBearing) {
 		double distance = e.getDistance();
 
 		xForce = xForce * .9 - Math.sin(absoluteBearing) / distance;
 		yForce = yForce * .9 - Math.cos(absoluteBearing) / distance;
 
-		setTurnRightRadians(Utils.normalRelativeAngle(Math.atan2(xForce + 1 / getX() - 1 / (getBattleFieldWidth() - getX()),
+		setTurnRightRadians(
+				Utils.normalRelativeAngle(Math.atan2(xForce + 1 / getX() - 1 / (getBattleFieldWidth() - getX()),
 						yForce + 1 / getY() - 1 / (getBattleFieldHeight() - getY())) - getHeadingRadians()));
-
+		
 		setAhead(Double.POSITIVE_INFINITY);
 		setMaxVelocity(420 / getTurnRemaining());
 	}
