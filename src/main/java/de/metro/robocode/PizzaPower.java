@@ -50,18 +50,27 @@ public class PizzaPower extends AdvancedRobot {
     	
     	moveCorners(e);
     	
-    	firePredictiveBullet();
+    	double absoluteBearing = absoluteBearing(getX(), getY(), enemy.x, enemy.y); 
+    	firePredictiveBullet(absoluteBearing);
+    	
+    	lockRadarAndGunOnEnemy(absoluteBearing);
     }
     
-    void firePredictiveBullet() {
+	private void lockRadarAndGunOnEnemy(double absoluteBearing) {
+		if (getGunHeat() < 1) {
+			setTurnRadarLeft(getRadarTurnRemaining());
+		}
+
+		setTurnGunRightRadians(Utils.normalRelativeAngle(absoluteBearing - getGunHeadingRadians()));
+	}
+	
+    void firePredictiveBullet(double absoluteBearing) {
     	if (enemy == null || enemy.name == null) {
     		return;
     	}
     	
     	double firePower = computeMinBulletPower(enemy.energy, enemy.distance);
-		double absDeg = absoluteBearing(getX(), getY(), enemy.x, enemy.y);
-		
-		setTurnGunRight(absDeg - getGunHeading());
+		setTurnGunRight(absoluteBearing - getGunHeading());
 		
 		if (getGunHeat() == 0 && Math.abs(getGunTurnRemaining()) < 10) {
 			System.out.println("setting fire = " + firePower);
