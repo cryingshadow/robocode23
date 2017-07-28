@@ -6,7 +6,6 @@ import java.awt.geom.Point2D;
 import robocode.AdvancedRobot;
 import robocode.Condition;
 import robocode.CustomEvent;
-import robocode.HitByBulletEvent;
 import robocode.HitWallEvent;
 import robocode.RobotDeathEvent;
 import robocode.ScannedRobotEvent;
@@ -23,6 +22,7 @@ public class PizzaPower extends AdvancedRobot {
 	static double yForce;
 	static int timeFromLastWallHit = 0;
 	int moveStrategy = MOVE_CORNERS;
+	int moveDirection = 1;
 	
     @Override
     public void run() {
@@ -45,16 +45,29 @@ public class PizzaPower extends AdvancedRobot {
         	
         	timeFromLastWallHit++;
         	
+        	if (moveStrategy == MOVE_SIDEWAYS) {
+				moveSideway();
+				firePredictiveBullet();
+			}
+        	
         	setTurnRadarRight(360);
             
             execute();
             
 			moveStrategy = getOthers() <= ROBOT_COUNT_FOR_WHICH_TO_CHANGE_STRATEGY ? MOVE_SIDEWAYS : MOVE_CORNERS;
-			System.out.println("gunHeat = " + getGunHeat() + " others= " + getOthers() + " moveStrategy = "
-					+ (moveStrategy == MOVE_SIDEWAYS ? "ocillator " : " dut bunny ") + " getTime()= " + getTime());
         }
     }
 
+	public void moveSideway() {
+		setTurnRight(normalizeBearing(enemy.bearing + 90 - (15 * moveDirection)));
+
+		if (getVelocity() == 0) {
+			setMaxVelocity(8);
+			moveDirection *= -1;
+			setAhead(10000 * moveDirection);
+		}
+	}
+	
     public void onScannedRobot(ScannedRobotEvent e) {
     	if (enemy.name == null || enemy.name.equals(e.getName()) || e.getDistance() < enemy.distance) {
     		enemy.update(e, getX(), getY(), getHeading());
