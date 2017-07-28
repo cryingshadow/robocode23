@@ -114,7 +114,7 @@ public class PizzaPower extends AdvancedRobot {
 		
     	setTurnGunRight(normalizeBearing(absDeg - getGunHeading()));
 		
-		if (getGunHeat() == 0 && Math.abs(getGunTurnRemaining()) < 10) {
+		if (getGunHeat() == 0 && Math.abs(getGunTurnRemaining()) < 9) {
 			setFireBullet(firePower);
 		}
     }
