@@ -1,6 +1,7 @@
 package de.metro.robocode;
 
 import java.awt.Color;
+import java.awt.geom.Point2D;
 
 import robocode.AdvancedRobot;
 import robocode.Condition;
@@ -16,6 +17,7 @@ public class PizzaPower extends AdvancedRobot {
 	Enemy enemy = new Enemy();
 	static double xForce;
 	static double yForce;
+	static int timeFromLastWallHit = 0;
 	
     @Override
     public void run() {
@@ -31,6 +33,9 @@ public class PizzaPower extends AdvancedRobot {
 		
         while (true) {
         	System.out.println("enemy = " + enemy + " others= " + getOthers());
+        	System.out.println(timeFromLastWallHit);
+        	
+        	timeFromLastWallHit++;
         	
         	setTurnRadarRight(360);
             
@@ -45,9 +50,57 @@ public class PizzaPower extends AdvancedRobot {
     	
     	moveCorners(e);
     	
-        fire(1);
+    	firePredictiveBullet();
     }
+    
+    void firePredictiveBullet() {
+    	if (enemy == null || enemy.name == null) {
+    		return;
+    	}
+    	
+    	double firePower = computeMinBulletPower(enemy.energy, enemy.distance);
+		double absDeg = absoluteBearing(getX(), getY(), enemy.x, enemy.y);
+		
+		setTurnGunRight(absDeg - getGunHeading());
+		
+		if (getGunHeat() == 0 && Math.abs(getGunTurnRemaining()) < 10) {
+			System.out.println("setting fire = " + firePower);
+			setFireBullet(firePower);
+		}
+    }
+    
+	double absoluteBearing(double x1, double y1, double x2, double y2) {
+		double xo = x2 - x1;
+		double yo = y2 - y1;
+		double arcSin = Math.toDegrees(Math.asin(xo / Point2D.distance(x1, y1, x2, y2)));
 
+		if (xo > 0 && yo > 0) { 
+			return arcSin;
+		} 
+		
+		if (xo < 0 && yo > 0) { 
+			return 360.0 + arcSin;
+		}						
+		
+		if (xo > 0 && yo < 0) { 
+			return 180.0 - arcSin;
+		}
+			
+		return 180.0 - arcSin;
+	}
+
+	private double computeMinBulletPower(double enemyEnergy, double distance) {
+		if (enemyEnergy <= 4.0) {
+			return Math.max(0.1, 0.00001 + enemyEnergy / 4.0);
+		}
+		
+		if (enemyEnergy <= 16.0) {
+			return Math.min(3.0, 0.00001 + (2.0 + enemyEnergy) / 6);
+		}
+		
+		return Math.min(3.0, 400 / distance);
+	}
+	
     public void moveCorners(ScannedRobotEvent e) {
 		double absoluteBearing = e.getBearingRadians() + getHeadingRadians();
 		double distance = e.getDistance();
@@ -64,8 +117,13 @@ public class PizzaPower extends AdvancedRobot {
     
     public void onCustomEvent(CustomEvent e) {
 		if ("wallApproaching".equals(e.getCondition().getName())) {
-			System.out.println("wall " + getX() + " " + getY());
-			setMaxVelocity(0);
+			System.out.println("wall X= " + getX() + " Y= " + getY() + " timeFromLastWallHit= " + timeFromLastWallHit);
+			
+			if (timeFromLastWallHit > 100) {
+				timeFromLastWallHit = 0;
+				// TODO: remove or improve this
+//				setMaxVelocity(0);
+			}
 		}
 	}
     
