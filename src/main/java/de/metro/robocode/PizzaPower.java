@@ -9,6 +9,7 @@ import robocode.CustomEvent;
 import robocode.HitRobotEvent;
 import robocode.HitWallEvent;
 import robocode.RobotDeathEvent;
+import robocode.RoundEndedEvent;
 import robocode.ScannedRobotEvent;
 import robocode.util.Utils;
 
@@ -195,15 +196,24 @@ public class PizzaPower extends AdvancedRobot {
     public void onHitWall(HitWallEvent event) {
     }
 
+    @Override
     public void onHitRobot(HitRobotEvent e) {
 		timeFromLastWallHit += MIN_TIME_FROM_LAST_WALL_HIT;
 	}
     
+    @Override
     public void onRobotDeath(RobotDeathEvent e) {
 		if (e.getName().equals(enemy.name)) {
 			enemy.name = null;
 		}
 	}
+    
+    @Override
+    public void onRoundEnded(RoundEndedEvent event) {
+    	if (enemy != null) {
+    		enemy.name = null;
+    	}
+    }
     
 	public class Enemy {
 		String name;
