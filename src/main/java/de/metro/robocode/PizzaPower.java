@@ -8,6 +8,7 @@ import robocode.Condition;
 import robocode.CustomEvent;
 import robocode.HitByBulletEvent;
 import robocode.HitWallEvent;
+import robocode.RobotDeathEvent;
 import robocode.ScannedRobotEvent;
 import robocode.util.Utils;
 
@@ -173,11 +174,13 @@ public class PizzaPower extends AdvancedRobot {
     public void onHitWall(HitWallEvent event) {
     	System.out.println("wall hit " + event.getBearing() + " " + event.getTime());
     }
-    
-    public void onHitByBullet(HitByBulletEvent e) {
-        turnLeft(90 - e.getBearing());
-    }
 
+    public void onRobotDeath(RobotDeathEvent e) {
+		if (e.getName().equals(enemy.name)) {
+			enemy.name = null;
+		}
+	}
+    
 	public class Enemy {
 		String name;
 		double bearing;
