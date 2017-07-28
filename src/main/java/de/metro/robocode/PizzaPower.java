@@ -50,35 +50,37 @@ public class PizzaPower extends AdvancedRobot {
     	
     	moveCorners(e);
     	
-    	double absoluteBearing = absoluteBearing(getX(), getY(), enemy.x, enemy.y);
-    	
     	if (getGunHeat() == 0) {
-			System.out.println("preparing to fire absoluteBearing " + absoluteBearing);
-
-			firePredictiveBullet(absoluteBearing);
+			firePredictiveBullet();
     	}
     	
     	if (e.getName().equals(enemy.name)) {
-    		lockRadarAndGunOnEnemy(absoluteBearing);
+    		lockRadarAndGunOnEnemy();
     	}
     }
     
-	private void lockRadarAndGunOnEnemy(double absoluteBearing) {
+	private void lockRadarAndGunOnEnemy() {
 		if (getGunHeat() < 1) {
 			setTurnRadarLeft(getRadarTurnRemaining());
 		}
 
+		double absoluteBearing = absoluteBearing(getX(), getY(), enemy.x, enemy.y);
 		setTurnGunRightRadians(Utils.normalRelativeAngle(absoluteBearing - getGunHeadingRadians()));
 	}
 	
-    void firePredictiveBullet(double absoluteBearing) {
+    void firePredictiveBullet() {
     	if (enemy == null || enemy.name == null) {
     		return;
     	}
     	
     	double firePower = computeMinBulletPower(enemy.energy, enemy.distance);
-
-    	setTurnGunRight(normalizeBearing(absoluteBearing - getGunHeading()));
+		double bulletSpeed = 20 - firePower * 3;
+		long time = (long) (enemy.distance / bulletSpeed);
+		double futureX = enemy.getFutureX(time);
+		double futureY = enemy.getFutureY(time);
+		double absDeg = absoluteBearing(getX(), getY(), futureX, futureY);
+		
+    	setTurnGunRight(normalizeBearing(absDeg - getGunHeading()));
 		
 		if (getGunHeat() == 0 && Math.abs(getGunTurnRemaining()) < 10) {
 			System.out.println("setting fire = " + firePower);
@@ -193,6 +195,14 @@ public class PizzaPower extends AdvancedRobot {
 			this.y = myY + Math.cos(Math.toRadians(absBearingDeg)) * e.getDistance();
 		}
 
+		public double getFutureX(long when) {
+			return x + Math.sin(Math.toRadians(heading)) * velocity * when;
+		}
+
+		public double getFutureY(long when) {
+			return y + Math.cos(Math.toRadians(heading)) * velocity * when;
+		}
+		
 		@Override
 		public String toString() {
 			return "Enemy [name=" + name + ", bearing=" + bearing + ", distance=" + distance + ", energy=" + energy
