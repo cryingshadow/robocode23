@@ -6,12 +6,14 @@ import java.awt.geom.Point2D;
 import robocode.AdvancedRobot;
 import robocode.Condition;
 import robocode.CustomEvent;
+import robocode.HitRobotEvent;
 import robocode.HitWallEvent;
 import robocode.RobotDeathEvent;
 import robocode.ScannedRobotEvent;
 import robocode.util.Utils;
 
 public class PizzaPower extends AdvancedRobot {
+	private static final int MIN_TIME_FROM_LAST_WALL_HIT = 60;
 	private static final double WALL_MARGIN = 30;
 	private static final int ROBOT_COUNT_FOR_WHICH_TO_CHANGE_STRATEGY = 3;
 	private static final int MOVE_SIDEWAYS = 1;
@@ -183,7 +185,7 @@ public class PizzaPower extends AdvancedRobot {
 		if ("wallApproaching".equals(e.getCondition().getName())) {
 			System.out.println("wall X= " + getX() + " Y= " + getY() + " timeFromLastWallHit= " + timeFromLastWallHit);
 			
-			if (timeFromLastWallHit > 100) {
+			if (timeFromLastWallHit > MIN_TIME_FROM_LAST_WALL_HIT) {
 				timeFromLastWallHit = 0;
 
 				if (moveStrategy == MOVE_SIDEWAYS) {
@@ -195,9 +197,12 @@ public class PizzaPower extends AdvancedRobot {
     
     @Override
     public void onHitWall(HitWallEvent event) {
-    	System.out.println("wall hit " + event.getBearing() + " " + event.getTime());
     }
 
+    public void onHitRobot(HitRobotEvent e) {
+		timeFromLastWallHit += MIN_TIME_FROM_LAST_WALL_HIT;
+	}
+    
     public void onRobotDeath(RobotDeathEvent e) {
 		if (e.getName().equals(enemy.name)) {
 			enemy.name = null;
