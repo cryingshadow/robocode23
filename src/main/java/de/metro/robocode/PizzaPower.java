@@ -26,7 +26,9 @@ public class PizzaPower extends AdvancedRobot {
 	
     @Override
     public void run() {
-		setColors(Color.cyan, Color.magenta, Color.cyan);
+		setColors(Color.cyan, Color.cyan, Color.cyan);
+		setBulletColor(Color.cyan);
+		
 		setAdjustRadarForGunTurn(true);
 		setAdjustGunForRobotTurn(true);
 		setAdjustRadarForGunTurn(true);
