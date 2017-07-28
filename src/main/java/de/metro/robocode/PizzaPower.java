@@ -44,9 +44,6 @@ public class PizzaPower extends AdvancedRobot {
 		});
 		
         while (true) {
-        	System.out.println("enemy = " + enemy + " others= " + getOthers());
-        	System.out.println(timeFromLastWallHit);
-        	
         	timeFromLastWallHit++;
         	
         	if (moveStrategy == MOVE_SIDEWAYS) {
@@ -118,7 +115,6 @@ public class PizzaPower extends AdvancedRobot {
     	setTurnGunRight(normalizeBearing(absDeg - getGunHeading()));
 		
 		if (getGunHeat() == 0 && Math.abs(getGunTurnRemaining()) < 10) {
-			System.out.println("setting fire = " + firePower);
 			setFireBullet(firePower);
 		}
     }
