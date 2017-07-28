@@ -77,7 +77,8 @@ public class PizzaPower extends AdvancedRobot {
     	}
     	
     	double firePower = computeMinBulletPower(enemy.energy, enemy.distance);
-		setTurnGunRight(absoluteBearing - getGunHeading());
+
+    	setTurnGunRight(normalizeBearing(absoluteBearing - getGunHeading()));
 		
 		if (getGunHeat() == 0 && Math.abs(getGunTurnRemaining()) < 10) {
 			System.out.println("setting fire = " + firePower);
@@ -85,6 +86,18 @@ public class PizzaPower extends AdvancedRobot {
 		}
     }
     
+	double normalizeBearing(double angle) {
+		while (angle > 180) {
+			angle -= 360;
+		}
+		
+		while (angle < -180) {
+			angle += 360;
+		}
+		
+		return angle;
+	}
+	
 	double absoluteBearing(double x1, double y1, double x2, double y2) {
 		double xo = x2 - x1;
 		double yo = y2 - y1;
