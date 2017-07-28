@@ -50,8 +50,13 @@ public class PizzaPower extends AdvancedRobot {
     	
     	moveCorners(e);
     	
-    	double absoluteBearing = absoluteBearing(getX(), getY(), enemy.x, enemy.y); 
-    	firePredictiveBullet(absoluteBearing);
+    	double absoluteBearing = absoluteBearing(getX(), getY(), enemy.x, enemy.y);
+    	
+    	if (getGunHeat() == 0) {
+			System.out.println("preparing to fire absoluteBearing " + absoluteBearing);
+
+			firePredictiveBullet(absoluteBearing);
+    	}
     	
     	lockRadarAndGunOnEnemy(absoluteBearing);
     }
