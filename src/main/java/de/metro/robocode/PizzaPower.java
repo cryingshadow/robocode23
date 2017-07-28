@@ -73,6 +73,10 @@ public class PizzaPower extends AdvancedRobot {
     		enemy.update(e, getX(), getY(), getHeading());
     	}
     	
+    	if (moveStrategy == MOVE_SIDEWAYS) {
+    		return;
+    	}
+    	
     	double absoluteBearing =  e.getBearingRadians() + getHeadingRadians();
     	moveCorners(e, absoluteBearing);
     	
