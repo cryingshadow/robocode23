@@ -44,7 +44,7 @@ public class PizzaPower extends AdvancedRobot {
     }
 
     public void onScannedRobot(ScannedRobotEvent e) {
-    	if (enemy.name == null || enemy.name.equals(e.getName())) {
+    	if (enemy.name == null || enemy.name.equals(e.getName()) || e.getDistance() < enemy.distance) {
     		enemy.update(e, getX(), getY(), getHeading());
     	}
     	
@@ -58,7 +58,9 @@ public class PizzaPower extends AdvancedRobot {
 			firePredictiveBullet(absoluteBearing);
     	}
     	
-    	lockRadarAndGunOnEnemy(absoluteBearing);
+    	if (e.getName().equals(enemy.name)) {
+    		lockRadarAndGunOnEnemy(absoluteBearing);
+    	}
     }
     
 	private void lockRadarAndGunOnEnemy(double absoluteBearing) {
