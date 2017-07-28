@@ -63,7 +63,9 @@ public class PizzaPower extends AdvancedRobot {
 
 		if (getVelocity() == 0) {
 			setMaxVelocity(8);
+			
 			moveDirection *= -1;
+			
 			setAhead(10000 * moveDirection);
 		}
 	}
@@ -181,8 +183,10 @@ public class PizzaPower extends AdvancedRobot {
 			
 			if (timeFromLastWallHit > 100) {
 				timeFromLastWallHit = 0;
-				// TODO: remove or improve this
-//				setMaxVelocity(0);
+
+				if (moveStrategy == MOVE_SIDEWAYS) {
+					setMaxVelocity(0);
+				}
 			}
 		}
 	}
