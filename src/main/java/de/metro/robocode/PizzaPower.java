@@ -13,11 +13,15 @@ import robocode.util.Utils;
 
 public class PizzaPower extends AdvancedRobot {
 	private static final double WALL_MARGIN = 30;
+	private static final int ROBOT_COUNT_FOR_WHICH_TO_CHANGE_STRATEGY = 3;
+	private static final int MOVE_SIDEWAYS = 1;
+	private static final int MOVE_CORNERS = 2;
 	
 	Enemy enemy = new Enemy();
 	static double xForce;
 	static double yForce;
 	static int timeFromLastWallHit = 0;
+	int moveStrategy = MOVE_CORNERS;
 	
     @Override
     public void run() {
@@ -43,6 +47,10 @@ public class PizzaPower extends AdvancedRobot {
         	setTurnRadarRight(360);
             
             execute();
+            
+			moveStrategy = getOthers() <= ROBOT_COUNT_FOR_WHICH_TO_CHANGE_STRATEGY ? MOVE_SIDEWAYS : MOVE_CORNERS;
+			System.out.println("gunHeat = " + getGunHeat() + " others= " + getOthers() + " moveStrategy = "
+					+ (moveStrategy == MOVE_SIDEWAYS ? "ocillator " : " dut bunny ") + " getTime()= " + getTime());
         }
     }
 
